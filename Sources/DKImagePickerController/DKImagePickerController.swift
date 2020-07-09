@@ -466,11 +466,14 @@ open class DKImagePickerController: DKUINavigationController, DKImageBaseManager
     // MARK: - Capturing Image
     
     internal func processImageFromCamera(_ image: UIImage, _ metadata: [AnyHashable : Any]?) {
-        self.saveImage(image, metadata) { asset in
-            if !self.isInlineCamera {
-                self.dismissCamera()
+        DispatchQueue.main.async {
+            
+            self.saveImage(image, metadata) { asset in
+                if !self.isInlineCamera {
+                    self.dismissCamera()
+                }
+                self.select(asset: asset)
             }
-            self.select(asset: asset)
         }
     }
     
@@ -480,7 +483,7 @@ open class DKImagePickerController: DKUINavigationController, DKImageBaseManager
                               _ metadata: [AnyHashable : Any]?,
                               _ completeBlock: @escaping ((_ asset: DKAsset) -> Void)) {
         if let metadata = metadata {
-            let imageData = image.jpegData(compressionQuality: 1)!
+            let imageData = image.jpegData(compressionQuality: 0.3)!
             
             if let imageDataWithMetadata = self.writeMetadata(metadata, into: imageData) {
                 self.saveImageDataToAlbumForiOS9(imageDataWithMetadata, completeBlock)
